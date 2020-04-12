@@ -77,4 +77,6 @@ typedef struct _Script              // Encapsulates a full script
     HostAPICallTable HostAPICallTable; // The host API call table
 } Script;
 
+extern Script g_Script;
+
 #endif //XVM_STRUCTURE_H

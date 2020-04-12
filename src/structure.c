@@ -3,3 +3,5 @@
 //
 
 #include "structure.h"
+
+Script g_Script;
