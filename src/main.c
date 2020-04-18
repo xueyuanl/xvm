@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "constants.h"
-#include "structure.h"
+#include "global.h"
 
 void Init() {
     // ---- Initialize the script structure
