@@ -5,6 +5,8 @@
 #ifndef XVM_CONSTANTS_H
 #define XVM_CONSTANTS_H
 
+#define MAX_COERCION_STRING_SIZE    64
+
 #define OP_TYPE_NULL                -1
 #define OP_TYPE_INT                 0           // Integer literal value
 #define OP_TYPE_FLOAT               1           // Floating-point literal value
