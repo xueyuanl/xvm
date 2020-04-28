@@ -5,6 +5,8 @@
 #ifndef XVM_STRUCTURE_H
 #define XVM_STRUCTURE_H
 
+#include "constants.h"
+
 typedef struct _Value               // A runtime value
 {
     int iType;                      // Type
@@ -54,10 +56,20 @@ typedef struct _Func                // Function table element
     int iStackFrameSize;            // Total size of the stack frame
 } Func;
 
+typedef void (*func)(void);
+
+typedef struct _HostFunc {
+    char *ptrFuncName;
+    int iParamCount;
+    func fHostfunc;
+} HostFunc;
+
 typedef struct _HostAPICallTable    // A host API call table
 {
     char **ppstrCalls;              // Pointer to the call array
     int iSize;                      // The number of calls in the array
+    HostFunc ptrHostFuncTable[MAXHOSTFUNC];
+    int iFuncNum;
 } HostAPICallTable;
 
 typedef struct _Script              // Encapsulates a full script

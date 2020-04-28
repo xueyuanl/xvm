@@ -33,4 +33,12 @@
 
 #define DEF_STACK_SIZE			    1024	    // The default stack size
 
+#define TRUE                        1
+#define FALSE                       0
+#define PRINT_INSTR                 1
+
+
+#define MAXHOSTFUNC                 5
+
+#define ESP                         0.000001
 #endif //XVM_CONSTANTS_H

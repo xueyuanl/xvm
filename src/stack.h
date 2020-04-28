@@ -10,6 +10,20 @@
 #include "global.h"
 #include "constants.h"
 
-#define ResolveStackIndex( iIndex ) ( iIndex < 0 ? iIndex += g_Script.Stack.iFrameIndex : iIndex )
+#define ResolveStackIndex(iIndex) ( iIndex < 0 ? iIndex += g_Script.Stack.iFrameIndex : iIndex )
+
+Value GetStackValue(int iIndex);
+
+void SetStackValue(int iIndex, Value Val);
+
+void CopyValue(Value *pDest, Value Source);
+
+void Push(Value Val);
+
+Value Pop();
+
+void PushFrame(int iSize);
+
+void PopFrame(int iSize);
 
 #endif //XVM_STACK_H

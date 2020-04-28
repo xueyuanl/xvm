@@ -27,6 +27,13 @@ int GetOpAsInt(int iOpIndex) {
     return g_Script.InstrStream.pInstrs[iCurrInstr].pOpList[iOpIndex].iIntLiteral;
 }
 
+int ResolveOpType(int iOpIndex) {
+    // Resolve the operand's value
+    Value OpValue = ResolveOpValue(iOpIndex);
+    // Return the value type
+    return OpValue.iType;
+}
+
 Value ResolveOpValue(int iOpIndex) {
     // Get the current instruction
     int iCurrInstr = g_Script.InstrStream.iCurrInstr;
