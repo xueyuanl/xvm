@@ -45,7 +45,7 @@ void PopFrame(int iSize) {
     g_Script.Stack.iTopIndex -= iSize;
 }
 
-void CopyValue(Value *pDest, Value Source) {
+void CopyValue(Value *pDest, Value Source) {  // TODO: why not use the pointer to pass source param
     // If the destination already contains a string, make sure to free it first
     if (pDest->iType == OP_TYPE_STRING)
         free(pDest->pstrStringLiteral);

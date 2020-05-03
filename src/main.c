@@ -7,9 +7,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
-
 #include <unistd.h>
-
 #include <math.h>
 #include "constants.h"
 #include "global.h"
@@ -909,8 +907,9 @@ int RunScript() {
         if (PRINT_INSTR)
             printf("\n");
 
-
+        // Has IP changed during the instruction's execution?
         if (iCurrInstr == g_Script.InstrStream.iCurrInstr)
+            // No, so increment it
             ++g_Script.InstrStream.iCurrInstr;
 
         if (iExitExecLoop)
