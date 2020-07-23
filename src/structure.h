@@ -75,6 +75,7 @@ typedef struct _HostAPICallTable    // A host API call table
 typedef struct _Script              // Encapsulates a full script
 {
     // Header data
+    char *test;
     int iGlobalDataSize;            // The size of the script's global data
     int iIsMainFuncPresent;         // Is _Main () present?
     int iMainFuncIndex;             // _Main ()'s function index
@@ -89,6 +90,5 @@ typedef struct _Script              // Encapsulates a full script
     HostAPICallTable HostAPICallTable; // The host API call table
 } Script;
 
-extern Script g_Script;
 
 #endif //XVM_STRUCTURE_H

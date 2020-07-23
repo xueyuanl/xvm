@@ -10,6 +10,7 @@
 #include "stack.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include "host_api.h"
 
 #define INSTRS_ARRAY         {    \
             "Mov",              \
@@ -121,5 +122,6 @@ char *CoerceValueToString(Value Val);
 
 Value *ResolveOpPntr(int iOpIndex);
 
+void itoa(int n, char s[]);
 
 #endif //XVM_INSTRUCTION_H

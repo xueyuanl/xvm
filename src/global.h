@@ -7,4 +7,6 @@
 
 #include "structure.h"
 
+
+extern Script g_Script;
 #endif //XVM_GLOBAL_H

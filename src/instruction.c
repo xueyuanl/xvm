@@ -87,11 +87,6 @@ int ResolveOpStackIndex(int iOpIndex) {
     }
 }
 
-Value GetStackValue(int iIndex) {
-    // Use ResolveStackIndex () to return the element at the specified index
-    return g_Script.Stack.pElmnts[ResolveStackIndex(iIndex)];
-}
-
 inline int ResolveOpAsInt(int iOpIndex) {
     // Resolve the operand's value
     Value OpValue = ResolveOpValue(iOpIndex);
@@ -115,6 +110,20 @@ char *ResolveOpAsString(int iOpIndex) {
     // Coerce it to a string and return it
     char *pstrString = CoerceValueToString(OpValue);
     return pstrString;
+}
+
+int ResolveOpAsInstrIndex(int iOpIndex) {
+    // Resolve the operand's value
+    Value OpValue = ResolveOpValue(iOpIndex);
+    // Return it's instruction index
+    return OpValue.iInstrIndex;
+}
+
+int ResolveOpAsFuncIndex(int iOpIndex) {
+    // Resolve the operand's value
+    Value OpValue = ResolveOpValue(iOpIndex);
+    // Return the function index
+    return OpValue.iFuncIndex;
 }
 
 int CoerceValueToInt(Value Val) {
@@ -161,7 +170,7 @@ char *CoerceValueToString(Value Val) {
     switch (Val.iType) {
         // It's an integer, so convert it to a string
         case OP_TYPE_INT:
-            itoa(Val.iIntLiteral, pstrCoercion, 10);
+            itoa(Val.iIntLiteral, pstrCoercion);
             return pstrCoercion;
             // It's a float, so use sprintf () to convert it since there's
             // no built-in function for converting floats to strings
@@ -175,6 +184,15 @@ char *CoerceValueToString(Value Val) {
         default:
             return NULL;
     }
+}
+
+char *ResolveOpAsHostAPICall(int iOpIndex) {
+    // Resolve the operand's value
+    Value OpValue = ResolveOpValue(iOpIndex);
+    // Get the value's host API call index
+    int iHostAPICallIndex = OpValue.iHostAPICallIndex;
+    // Return the host API call
+    return GetHostAPICall(iHostAPICallIndex);
 }
 
 Value *ResolveOpPntr(int iOpIndex) {
@@ -196,3 +214,30 @@ Value *ResolveOpPntr(int iOpIndex) {
     return NULL;
 }
 
+/* reverse:  reverse string s in place */
+void reverse(char s[]) {
+    int i, j;
+    char c;
+
+    for (i = 0, j = strlen(s) - 1; i < j; i++, j--) {
+        c = s[i];
+        s[i] = s[j];
+        s[j] = c;
+    }
+}
+
+/* itoa:  convert n to characters in s */
+void itoa(int n, char s[]) {
+    int i, sign;
+
+    if ((sign = n) < 0)  /* record sign */
+        n = -n;          /* make n positive */
+    i = 0;
+    do {       /* generate digits in reverse order */
+        s[i++] = n % 10 + '0';   /* get next digit */
+    } while ((n /= 10) > 0);     /* delete it */
+    if (sign < 0)
+        s[i++] = '-';
+    s[i] = '\0';
+    reverse(s);
+}

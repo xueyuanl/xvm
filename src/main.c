@@ -14,6 +14,7 @@
 #include "stack.h"
 #include "instruction.h"
 #include "function.h"
+#include "host_api.h"
 
 char ppstrMnemonics[][12] = INSTRS_ARRAY;
 char *point = NULL;
@@ -65,6 +66,17 @@ void PrintOpValue(int iOpIndex) {
     }
 }
 
+void PrintString() {
+    char *ch = GetParamAsString(0);
+
+    printf("\n%s\n", ch);
+
+    if (GetParamAsValue(0).iType != OP_TYPE_STRING)
+        free(ch);
+
+    ReturnStringFromHost("ret_str", 1);
+}
+
 void Init() {
     // ---- Initialize the script structure
     g_Script.iIsMainFuncPresent = FALSE;
@@ -80,6 +92,61 @@ void Init() {
     memset(g_Script.HostAPICallTable.ptrHostFuncTable, 0, sizeof(g_Script.HostAPICallTable.ptrHostFuncTable));
     g_Script.HostAPICallTable.iFuncNum = 0;
     RegisterHostFunc("PrintString", 1, PrintString);
+
+}
+
+void ShutDown() {
+    // ---- Free The instruction stream
+    // First check to see if any instructions have string operands, and free them if they
+    // do
+    int iCurrInstrIndex;
+    int iCurrOpIndex;
+    for (iCurrInstrIndex = 0; iCurrInstrIndex < g_Script.InstrStream.iSize; ++iCurrInstrIndex) {
+        // Make a local copy of the operand count and operand list
+        int iOpCount = g_Script.InstrStream.pInstrs[iCurrInstrIndex].iOpCount;
+        Value *pOpList = g_Script.InstrStream.pInstrs[iCurrInstrIndex].pOpList;
+        // Loop through each operand and free its string pointer
+        for (iCurrOpIndex = 0; iCurrOpIndex < iOpCount; ++iCurrOpIndex) {
+            if (pOpList[iCurrOpIndex].iType == OP_TYPE_STRING && pOpList[iCurrOpIndex].pstrStringLiteral) {
+                free(pOpList[iCurrOpIndex].pstrStringLiteral);
+            }
+
+        }
+        free(pOpList);
+    }
+
+    // Now free the stream itself
+    if (g_Script.InstrStream.pInstrs)
+        free(g_Script.InstrStream.pInstrs);
+    // ---- Free the runtime stack
+
+    // Free any strings that are still on the stack
+
+
+    for (int iCurrElmtnIndex = 0; iCurrElmtnIndex < g_Script.Stack.iSize; ++iCurrElmtnIndex)
+        if (g_Script.Stack.pElmnts[iCurrElmtnIndex].iType == OP_TYPE_STRING)
+            free(g_Script.Stack.pElmnts[iCurrElmtnIndex].pstrStringLiteral);
+    // Now free the stack itself
+    if (g_Script.Stack.pElmnts)
+        free(g_Script.Stack.pElmnts);
+    // ---- Free the function table
+    if (g_Script.pFuncTable)
+        free(g_Script.pFuncTable);
+    // --- Free the host API call table
+    // First free each string in the table individually
+    for (int iCurrCallIndex = 0; iCurrCallIndex < g_Script.HostAPICallTable.iSize; ++iCurrCallIndex)
+        if (g_Script.HostAPICallTable.ppstrCalls[iCurrCallIndex])
+            free(g_Script.HostAPICallTable.ppstrCalls[iCurrCallIndex]);
+    // Now free the table itself
+    if (g_Script.HostAPICallTable.ppstrCalls)
+        free(g_Script.HostAPICallTable.ppstrCalls);
+
+
+    //free HostFuncTable
+    int i;
+    for (i = 0; i < g_Script.HostAPICallTable.iFuncNum; i++) {
+        free(g_Script.HostAPICallTable.ptrHostFuncTable[i].ptrFuncName);
+    }
 
 }
 
@@ -164,7 +231,7 @@ int LoadScript(char *pstrFilename) {
         for (int iCurrOpIndex = 0; iCurrOpIndex < iOpCount; ++iCurrOpIndex) {
             // Read in the operand type (1 byte)
             pOpList[iCurrOpIndex].iType = 0;
-            // pOpList[iCurrOpIndex].pstrStringLiteral = NULL;
+            pOpList[iCurrOpIndex].pstrStringLiteral = NULL;
             fread(&pOpList[iCurrOpIndex].iType, 1, 1, pScriptFile);
             switch (pOpList[iCurrOpIndex].iType) {
                 // Integer literal
@@ -182,8 +249,7 @@ int LoadScript(char *pstrFilename) {
                     // Since there's no field in the Value structure for string table
                     // indices, read the index into the integer literal field and set
                     // its type to string index
-                    fread(&pOpList[iCurrOpIndex].iIntLiteral, sizeof(int),
-                          1, pScriptFile);
+                    fread(&pOpList[iCurrOpIndex].iIntLiteral, sizeof(int), 1, pScriptFile);
                     pOpList[iCurrOpIndex].iType = OP_TYPE_STRING;
                     break;
 
@@ -380,7 +446,6 @@ void ResetScript() {
 int RunScript() {
     int iExitExecLoop = FALSE;
     int iExitCode;
-
     while (TRUE) {
 
         int iCurrInstr = g_Script.InstrStream.iCurrInstr;
@@ -921,14 +986,14 @@ int RunScript() {
 
 
 int main(int argc, char *argv[]) {
-    if (argc == 1) {
+    /*if (argc == 1) {
         printf("need a file!\n");
         exit(0);
-    }
+    }*/
     int i = 0;
 
     Init();
-    if ((i = LoadScript(argv[1])) != LOAD_OK)
+    if ((i = LoadScript("/home/mystic/workspace/xvm/src/xas.out") != LOAD_OK))
         printf("wrong! id:%d\n ", i);
     ResetScript();
     RunScript();

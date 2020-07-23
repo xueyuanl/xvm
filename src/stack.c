@@ -3,6 +3,7 @@
 //
 
 #include "stack.h"
+#include <stdio.h>
 
 Value GetStackValue(int iIndex) {
     // Use ResolveStackIndex () to return the element at the specified index
@@ -53,8 +54,7 @@ void CopyValue(Value *pDest, Value Source) {  // TODO: why not use the pointer t
     *pDest = Source;
     // Make a physical copy of the source string, if necessary
     if (Source.iType == OP_TYPE_STRING) {
-        pDest->pstrStringLiteral = (char *)
-                malloc(strlen(Source.pstrStringLiteral) + 1);
+        pDest->pstrStringLiteral = (char *) malloc(strlen(Source.pstrStringLiteral) + 1);
         strcpy(pDest->pstrStringLiteral, Source.pstrStringLiteral);
     }
 }
